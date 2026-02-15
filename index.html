@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitación de San Valentín</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffe6f2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        h1 {
+            color: #d63384;
+            font-size: 2.5em;
+            text-align: center;
+            transition: opacity 0.5s;
+        }
+        .buttons {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            align-items: center;
+            /* Contenedor relativo para que el No empiece alineado */
+            position: relative; 
+            min-height: 100px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        #yes {
+            background-color: #ff69b4;
+            color: white;
+            z-index: 10;
+        }
+        #no {
+            background-color: #ffffff;
+            color: #d63384;
+            border: 2px solid #d63384;
+        }
+        .final-message {
+            display: none;
+            font-size: 3em;
+            color: #d63384;
+            text-align: center;
+            font-weight: bold;
+            animation: pop 0.5s ease-out;
+        }
+        @keyframes pop {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+        .confetti {
+            position: absolute;
+            font-size: 2em;
+            user-select: none;
+            pointer-events: none;
+            animation: fall 3s linear forwards;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <h1 id="question">¿Quieres ser mi San Valentín?</h1>
+    <div class="buttons" id="buttonContainer">
+        <button id="yes">Sí</button>
+        <button id="no">No</button>
+    </div>
+    <div class="final-message" id="final">
+        ¡Ya lo sabía, mi love! ❤️
+    </div>
+
+    <script>
+        const yesBtn = document.getElementById('yes');
+        const noBtn = document.getElementById('no');
+        const question = document.getElementById('question');
+        const container = document.getElementById('buttonContainer');
+        const finalMsg = document.getElementById('final');
+
+        let noScale = 1;
+        let yesScale = 1;
+
+        function moveNo() {
+            // Cambiamos a posición absoluta solo cuando el usuario interactúa
+            noBtn.style.position = 'absolute';
+            
+            // Calculamos límites para que no se salga de la pantalla
+            const padding = 50;
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+            
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+
+            // El No se hace chiquitito (mínimo 0.3 para que no desaparezca del todo)
+            if (noScale > 0.3) {
+                noScale -= 0.1;
+                noBtn.style.transform = `scale(${noScale})`;
+            }
+
+            // El Sí se vuelve gigante
+            yesScale += 0.15;
+            yesBtn.style.transform = `scale(${yesScale})`;
+        }
+
+        noBtn.addEventListener('mouseover', moveNo);
+        noBtn.addEventListener('click', moveNo);
+
+        yesBtn.addEventListener('click', () => {
+            question.style.display = 'none';
+            container.style.display = 'none';
+            finalMsg.style.display = 'block';
+
+            // Lluvia de corazones infinita por 5 segundos
+            const duration = 5000;
+            const end = Date.now() + duration;
+
+            const interval = setInterval(() => {
+                if (Date.now() > end) return clearInterval(interval);
+                
+                const heart = document.createElement('div');
+                heart.className = 'confetti';
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(heart);
+
+                setTimeout(() => heart.remove(), 3000);
+            }, 100);
+        });
+    </script>
+</body>
+</html>
